@@ -1,115 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Internet Subscription Payment Reminder</title>
+<title>Payment Due</title>
 <style>
-body {
-font-family: Arial, sans-serif;
-background-color: #fff; /* Light blue background color */
-margin: 0;
-padding: 0;
-display: flex;
-justify-content: center;
-align-items: center;
-height: 100vh;
-}
-.container {
-background: #add8e6;
-padding: 20px;
-border-radius: 10px;
-box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-max-width: 400px;
-width: 100%;
-text-align: center;
-}
-h1 {
-font-size: 2em;
-color: #f70505;
-}
-p {
-color: #000007;
-margin: 10px 0 20px;
-}
-h2 {
-font-size: 1.2em;
-color: #0509f7;
-text-decoration: underline;
-}
-.payment-option {
-margin-bottom: 15px;
-}
-.payment-option h2 {
-font-size: 1.2em;
-margin-bottom: 5px;
-color: #444;
-}
-.payment-option span {
-display: block;
-font-size: 0.9em;
-color: #1403fc;
-}
-.button {
-background-color: #007bff;
-color: white;
-padding: 10px 15px;
-border: none;
-border-radius: 5px;
-cursor: pointer;
-text-decoration: none;
-font-size: 1em;
-}
-.button:hover {
-background-color: #0056b3;
-}
-footer {
-margin-top: 20px;
-font-size: 0.8em;
-color: #929191;
-}
-.social-link {
-margin-top: 15px;
-}
-.social-link a {
-color: #007bff;
-text-decoration: none;
-font-size: 0.9em;
-}
-.social-link a:hover {
-text-decoration: underline;
-}
+body{font-family:Arial; background:#e6f7ff; display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; padding:20px;}
+.box{background:#fff; padding:30px; border-radius:10px; text-align:center; box-shadow:0 4px 15px rgba(0,0,0,0.1); max-width:420px; width:100%; border-top:5px solid #d32f2f;}
+h1{color:#d32f2f;}.amount{font-size:2.2em; color:#d32f2f; font-weight:bold;}
+.btn{background:#25D366; color:white; padding:14px 25px; border-radius:8px; text-decoration:none; font-weight:bold; display:inline-block; margin-top:15px;}
 </style>
 </head>
 <body>
-<div class="container">
-<img src="logo.jpg" alt="Logo" style="width: 150px; height: 70px; margin-bottom: 2px;">
-<h1>PAYMENT REMINDER</h1>
-<p>Dear Valued Customer,</p>
-<p>Your internet connectivity subscription is due. Please ensure your payment is made on time to continue enjoying uninterrupted services.</p>
-<h2>PAYMENT OPTIONS</h2>
-<div class="payment-option">
-<h2>GCash</h2>
-<span>Account Name: Dave Malinao</span>
-<span>Account Number: 0955-439-9280</span>
-<span>Account Number: 0976-055-2230</span>
+<div class="box" id="box">
+<h1>⚠️ INTERNET PAUSED</h1>
+<p>Loading...</p>
 </div>
-<div class="payment-option">
-<h2>SeaBank</h2>
-<span>Account Name: Dave Malinao</span>
-<span>Account Number: 1682-4109-490</span>
-</div>
-<div class="payment-option">
-<h2>CIMB Bank</h2>
-<span>Account Name: Dave Malinao</span>
-<span>Account Number: 2086-7600-8400-53</span>
-<span>Account Number: 2086-0712-0775-70</span>
-</div>
-<div class="social-link">
-<p>For further assistance, visit my <a href="https://m.me/dave.malinao" target="_blank">MESSENGER</a>/<a href="https://t.me/dave1224881" target="_blank">Telegram</a>/<a href="https://wa.me/+639554399280" target="_blank">WhatsApp</a></p>
-</div>
-<footer> Thank You. </footer>
-<footer>&copy; All Rights Reserved 2025 </footer>
-</div>
+
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+const user = urlParams.get('user') || 'unknown';
+const csv_url = "https://docs.google.com/spreadsheets/d/1fqJXZJ6FAZPqcReFvGugADeQXh-KUsPen90na8eTu7I/gviz/tq?tqx=out:csv";
+
+fetch(csv_url)
+.then(res => res.text())
+.then(csv => {
+    const rows = csv.split('\n').map(row => row.split(','));
+    let name = user, amount = "500", plan = "Unknown";
+
+    for(let i=1; i<rows.length; i++){
+        if(rows[i][0] && rows[i][0].replace(/"/g,'').toLowerCase() == user.toLowerCase()){
+            name = rows[i][1].replace(/"/g,'');
+            amount = rows[i][2].replace(/"/g,'');
+            plan = rows[i][3].replace(/"/g,'');
+            break;
+        }
+    }
+
+    document.getElementById('box').innerHTML = `
+    <h1>⚠️ INTERNET PAUSED</h1>
+    <p>Hi <b>${name}</b></p>
+    <div style="background:#f5f5f5; padding:15px; border-radius:8px; margin:15px 0;">
+    Account: <b>${user}</b><br>
+    Plan: <b>${plan}</b>
+    </div>
+    <p>Amount Due:</p>
+    <p class="amount">Php ${amount}</p>
+    <h3>Pay via GCash</h3>
+    <span><b>Account Name:</b> Dave Malinao</span><br>
+    <span><b>Number:</b> 0955-439-9280</span><br>
+    <a href="https://m.me/dave.malinao?text=Payment%20Proof%20for%20${user}%20Amount:%20${amount}" class="btn" target="_blank">SEND PROOF OF PAYMENT</a>
+    `;
+});
+</script>
 </body>
 </html>
